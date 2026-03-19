@@ -102,7 +102,7 @@ $customers = $pdo->query("
 <body>
 
 <nav>
-    <span class="brand">🏪 Inventory Manager</span>
+    <span class="brand"> Inventory Manager</span>
     <a href="index.php">Dashboard</a>
     <a href="products.php">Products</a>
     <a href="new_sale.php">New Sale</a>
