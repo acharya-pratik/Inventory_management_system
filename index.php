@@ -100,7 +100,6 @@ $recent_sales = $pdo->query("
     <a href="new_sale.php">New Sale</a>
     <a href="reports.php">Reports</a>
     <a href="low_stock.php">Low Stock</a>
-    <a href="add_customer.php">Add Customer</a>
 </nav>
 
 <div class="container">
