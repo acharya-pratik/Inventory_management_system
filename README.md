@@ -7,7 +7,16 @@ A lightweight, visually appealing, and feature-rich Inventory Management System 
 The fastest way to get this project running on any operating system (Windows, macOS, or Linux) is using **Docker**.
 
 ### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+To run this project, you need **Docker** installed on your machine. Choose the guide for your operating system:
+
+*   **🪟 Windows:** Download and install [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/). *Note: Ensure WSL 2 is enabled during installation.*
+*   **🍎 macOS:** Download and install [Docker Desktop for Mac](https://docs.docker.com/desktop/install/mac-install/).
+*   **🐧 Linux (Ubuntu/Debian):** Follow the [Official Docker Engine Guide](https://docs.docker.com/engine/install/ubuntu/). Quick command:
+    ```bash
+    sudo apt-get update && sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    ```
+
+Ensure Docker is running before proceeding to the next steps.
 
 ### Steps to Run:
 **Option 1: The One-Liner (Fastest)**
