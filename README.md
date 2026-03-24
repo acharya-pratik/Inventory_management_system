@@ -10,6 +10,13 @@ The fastest way to get this project running on any operating system (Windows, ma
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
 
 ### Steps to Run:
+**Option 1: The One-Liner (Fastest)**
+Just copy and paste this into your terminal:
+```bash
+git clone git@github.com:acharya-pratik/Inventory_management_system.git && cd Inventory_management_system && docker-compose up -d --build
+```
+
+**Option 2: Step-by-Step**
 1. **Clone the Repository:**
    ```bash
    git clone git@github.com:acharya-pratik/Inventory_management_system.git
