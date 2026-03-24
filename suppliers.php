@@ -4,6 +4,7 @@ require_once 'includes/db.php';
 $success = '';
 $error   = '';
 
+// Handle add supplier
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_supplier'])) {
     $name    = trim($_POST['supplier_name']);
     $phone   = trim($_POST['phone']);
@@ -14,23 +15,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_supplier'])) {
         try {
             $stmt = $pdo->prepare("INSERT INTO supplier (supplier_name, phone, email, address) VALUES (?, ?, ?, ?)");
             $stmt->execute([$name, $phone, $email, $address]);
-            $success = "Supplier '$name' added!";
+            $success = "Supplier '$name' added successfully!";
         } catch (Exception $e) {
             $error = "Error: " . $e->getMessage();
         }
+    } else {
+        $error = "Supplier Name is required.";
     }
 }
 
+// Handle delete supplier
 if (isset($_GET['delete'])) {
     try {
         $stmt = $pdo->prepare("DELETE FROM supplier WHERE supplier_id = ?");
         $stmt->execute([$_GET['delete']]);
         $success = "Supplier deleted!";
     } catch (Exception $e) {
-        $error = "Could not delete supplier. It might be linked to products.";
+        $error = "Could not delete supplier. It might be linked to existing products.";
     }
 }
 
+// Fetch all suppliers
 $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetchAll();
 ?>
 
@@ -104,8 +109,8 @@ $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetch
                 <input type="email" name="email" placeholder="e.g. info@acme.com">
             </div>
             <div class="form-group">
-                <label>Address / Contact Details</label>
-                <textarea name="address" rows="3" placeholder="Physical address or additional contact info"></textarea>
+                <label>Address</label>
+                <textarea name="address" rows="3" placeholder="Physical address"></textarea>
             </div>
             <button type="submit" name="add_supplier" class="btn">Save Supplier</button>
         </form>
@@ -128,10 +133,10 @@ $suppliers = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetch
                 <?php endif; ?>
                 <?php foreach ($suppliers as $sup): ?>
                 <tr>
-                    <td style="font-weight: 600; color: #1e293b;"><?= htmlspecialchars($sup['supplier_name']) ?></td>
-                    <td><?= htmlspecialchars($sup['phone'] ?: 'N/A') ?></td>
-                    <td><?= htmlspecialchars($sup['email'] ?: 'N/A') ?></td>
-                    <td style="color: #64748b; font-size: 13px;"><?= nl2br(htmlspecialchars($sup['address'] ?: 'N/A')) ?></td>
+                    <td style="font-weight: 600; color: #1e293b;"><?= htmlspecialchars($sup['supplier_name'] ?? '') ?></td>
+                    <td><?= htmlspecialchars($sup['phone'] ?? 'N/A') ?></td>
+                    <td><?= htmlspecialchars($sup['email'] ?? 'N/A') ?></td>
+                    <td style="color: #64748b; font-size: 13px;"><?= nl2br(htmlspecialchars($sup['address'] ?? 'N/A')) ?></td>
                     <td>
                         <a href="?delete=<?= $sup['supplier_id'] ?>" class="action-link" onclick="return confirm('Delete this supplier?')">Delete</a>
                     </td>
