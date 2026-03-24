@@ -139,10 +139,12 @@ $products  = $pdo->query("
     <span class="brand">🏪 Inventory Manager</span>
     <a href="index.php">Dashboard</a>
     <a href="products.php">Products</a>
-    <a href="new_sale.php" class="active">New Sale</a>
+    <a href="categories.php">Categories</a>
+    <a href="suppliers.php">Suppliers</a>
+    <a href="customers.php">Customers</a>
+    <a href="new_sale_v2.php">New Sale</a>
     <a href="reports.php">Reports</a>
     <a href="low_stock.php">Low Stock</a>
-    <a href="add_customer.php">Customers</a>
 </nav>
 
 <div class="container">

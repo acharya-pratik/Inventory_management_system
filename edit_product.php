@@ -1,14 +1,30 @@
 <?php
-// ============================================================
-//  add_product.php — Add a New Product
-//  When form is submitted (POST), insert into product + stock
-// ============================================================
 require_once 'includes/db.php';
+
+$id = $_GET['id'] ?? null;
+if (!$id) {
+    header('Location: products.php');
+    exit;
+}
 
 $success = '';
 $error   = '';
 
-// Handle form submission
+// Fetch existing product data
+$stmt = $pdo->prepare("
+    SELECT p.*, st.quantity 
+    FROM product p 
+    JOIN stock st ON p.product_id = st.product_id 
+    WHERE p.product_id = ?
+");
+$stmt->execute([$id]);
+$product = $stmt->fetch();
+
+if (!$product) {
+    header('Location: products.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name          = trim($_POST['product_name']);
     $category_id   = $_POST['category_id'];
@@ -19,30 +35,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($name && $category_id && $supplier_id && $price) {
         try {
-            // Insert into product table
+            $pdo->beginTransaction();
+            
+            // Update product table
             $stmt = $pdo->prepare("
-                INSERT INTO product (product_name, category_id, supplier_id, price, reorder_level)
-                VALUES (?, ?, ?, ?, ?)
+                UPDATE product 
+                SET product_name = ?, category_id = ?, supplier_id = ?, price = ?, reorder_level = ?
+                WHERE product_id = ?
             ");
-            $stmt->execute([$name, $category_id, $supplier_id, $price, $reorder_level]);
+            $stmt->execute([$name, $category_id, $supplier_id, $price, $reorder_level, $id]);
 
-            // Get the new product's ID
-            $new_product_id = $pdo->lastInsertId();
+            // Update stock table
+            $stmt2 = $pdo->prepare("UPDATE stock SET quantity = ? WHERE product_id = ?");
+            $stmt2->execute([$quantity, $id]);
 
-            // Insert initial stock for this product
-            $stmt2 = $pdo->prepare("INSERT INTO stock (product_id, quantity) VALUES (?, ?)");
-            $stmt2->execute([$new_product_id, $quantity]);
-
-            $success = "Product '$name' added successfully!";
+            $pdo->commit();
+            $success = "Product updated successfully!";
+            
+            // Refresh product data
+            $product['product_name'] = $name;
+            $product['category_id'] = $category_id;
+            $product['supplier_id'] = $supplier_id;
+            $product['price'] = $price;
+            $product['reorder_level'] = $reorder_level;
+            $product['quantity'] = $quantity;
+            
         } catch (Exception $e) {
-            $error = " Error: " . $e->getMessage();
+            $pdo->rollBack();
+            $error = "Error: " . $e->getMessage();
         }
     } else {
-        $error = " Please fill in all required fields.";
+        $error = "Please fill in all required fields.";
     }
 }
 
-// Load categories and suppliers for the dropdowns
 $categories = $pdo->query("SELECT * FROM category ORDER BY category_name")->fetchAll();
 $suppliers  = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetchAll();
 ?>
@@ -51,7 +77,7 @@ $suppliers  = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetc
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Product — Inventory Manager</title>
+    <title>Edit Product — Inventory Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
@@ -93,7 +119,7 @@ $suppliers  = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetc
 </nav>
 
 <div class="container">
-    <h2>Add New Product</h2>
+    <h2>Edit Product</h2>
 
     <?php if ($success): ?>
         <div class="alert success"><?= $success ?></div>
@@ -106,15 +132,14 @@ $suppliers  = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetc
         <form method="POST">
             <div class="form-group">
                 <label>Product Name *</label>
-                <input type="text" name="product_name" placeholder="e.g. Samsung TV" required>
+                <input type="text" name="product_name" value="<?= htmlspecialchars($product['product_name']) ?>" required>
             </div>
 
             <div class="form-group">
                 <label>Category *</label>
                 <select name="category_id" required>
-                    <option value="">-- Select Category --</option>
                     <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['category_id'] ?>">
+                        <option value="<?= $cat['category_id'] ?>" <?= $cat['category_id'] == $product['category_id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($cat['category_name']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -124,9 +149,8 @@ $suppliers  = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetc
             <div class="form-group">
                 <label>Supplier *</label>
                 <select name="supplier_id" required>
-                    <option value="">-- Select Supplier --</option>
                     <?php foreach ($suppliers as $sup): ?>
-                        <option value="<?= $sup['supplier_id'] ?>">
+                        <option value="<?= $sup['supplier_id'] ?>" <?= $sup['supplier_id'] == $product['supplier_id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($sup['supplier_name']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -135,20 +159,20 @@ $suppliers  = $pdo->query("SELECT * FROM supplier ORDER BY supplier_name")->fetc
 
             <div class="form-group">
                 <label>Selling Price (Rs.) *</label>
-                <input type="number" name="price" step="0.01" min="0" placeholder="e.g. 5000" required>
+                <input type="number" name="price" step="0.01" min="0" value="<?= $product['price'] ?>" required>
             </div>
 
             <div class="form-group">
-                <label>Initial Stock Quantity</label>
-                <input type="number" name="quantity" min="0" value="0">
+                <label>Stock Quantity</label>
+                <input type="number" name="quantity" min="0" value="<?= $product['quantity'] ?>">
             </div>
 
             <div class="form-group">
-                <label>Reorder Level (alert when stock falls below)</label>
-                <input type="number" name="reorder_level" min="0" value="5">
+                <label>Reorder Level</label>
+                <input type="number" name="reorder_level" min="0" value="<?= $product['reorder_level'] ?>">
             </div>
 
-            <button type="submit" class="btn">Add Product</button>
+            <button type="submit" class="btn">Update Product</button>
         </form>
     </div>
 

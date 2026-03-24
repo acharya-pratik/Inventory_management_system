@@ -62,7 +62,10 @@ $products = $pdo->query("
     <span class="brand">🏪 Inventory Manager</span>
     <a href="index.php">Dashboard</a>
     <a href="products.php" class="active">Products</a>
-    <a href="new_sale.php">New Sale</a>
+    <a href="categories.php">Categories</a>
+    <a href="suppliers.php">Suppliers</a>
+    <a href="customers.php">Customers</a>
+    <a href="new_sale_v2.php">New Sale</a>
     <a href="reports.php">Reports</a>
     <a href="low_stock.php">Low Stock</a>
 </nav>
@@ -85,6 +88,7 @@ $products = $pdo->query("
                     <th>Stock Qty</th>
                     <th>Reorder Level</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -105,6 +109,10 @@ $products = $pdo->query("
                         <?php else: ?>
                             <span class="badge out">Out of Stock</span>
                         <?php endif; ?>
+                    </td>
+                    <td>
+                        <a href="edit_product.php?id=<?= $p['product_id'] ?>" style="color: #2563eb; text-decoration: none; font-weight: 600; margin-right: 10px;">Edit</a>
+                        <a href="delete_product.php?id=<?= $p['product_id'] ?>" style="color: #dc2626; text-decoration: none; font-weight: 600;" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

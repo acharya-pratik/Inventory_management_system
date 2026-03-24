@@ -29,6 +29,15 @@ $by_cat = $pdo->query("
     JOIN category c ON p.category_id = c.category_id
     GROUP BY c.category_id ORDER BY revenue DESC
 ")->fetchAll();
+
+// Recent Sales for the new section
+$recent_sales = $pdo->query("
+    SELECT sa.sale_id, c.customer_name, sa.sale_date, sa.total_amount
+    FROM sale sa
+    JOIN customer c ON sa.customer_id = c.customer_id
+    ORDER BY sa.sale_date DESC
+    LIMIT 10
+")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +68,10 @@ $by_cat = $pdo->query("
     <span class="brand">🏪 Inventory Manager</span>
     <a href="index.php">Dashboard</a>
     <a href="products.php">Products</a>
-    <a href="new_sale.php">New Sale</a>
+    <a href="categories.php">Categories</a>
+    <a href="suppliers.php">Suppliers</a>
+    <a href="customers.php">Customers</a>
+    <a href="new_sale_v2.php">New Sale</a>
     <a href="reports.php" class="active">Reports</a>
     <a href="low_stock.php">Low Stock</a>
 </nav>
@@ -114,6 +126,33 @@ $by_cat = $pdo->query("
                     <td><?= htmlspecialchars($b['category_name']) ?></td>
                     <td><?= $b['units_sold'] ?></td>
                     <td><?= number_format($b['revenue'], 2) ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recent Sales Table -->
+    <div class="table-box">
+        <h3>Recent Sales</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Bill #</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($recent_sales as $sale): ?>
+                <tr>
+                    <td>#<?= $sale['sale_id'] ?></td>
+                    <td><?= htmlspecialchars($sale['customer_name']) ?></td>
+                    <td><?= date('d M Y, h:i A', strtotime($sale['sale_date'])) ?></td>
+                    <td>Rs. <?= number_format($sale['total_amount'], 2) ?></td>
+                    <td><a href="view_sale.php?id=<?= $sale['sale_id'] ?>" style="color: #2563eb; text-decoration: none; font-weight: 600;">View Details</a></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
