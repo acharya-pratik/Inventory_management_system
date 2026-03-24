@@ -50,7 +50,7 @@ git clone git@github.com:acharya-pratik/Inventory_management_system.git && cd In
 ## ✨ Key Features
 
 - **📊 Smart Dashboard:** Real-time summary of total products, revenue, sales, and low-stock alerts.
-- **🛒 Optimized Sales (V2):** A high-performance sales page with:
+- **🛒 Optimized Sales:** A high-performance sales page with:
   - Real-time subtotal and grand total calculations.
   - Live stock validation (prevents over-selling).
   - Inline "Add New Customer" functionality.

@@ -69,7 +69,7 @@ $customers = $pdo->query("SELECT * FROM customer ORDER BY customer_name")->fetch
     <a href="categories.php">Categories</a>
     <a href="suppliers.php">Suppliers</a>
     <a href="customers.php" class="active">Customers</a>
-    <a href="new_sale_v2.php">New Sale</a>
+    <a href="new_sale.php">New Sale</a>
     <a href="reports.php">Reports</a>
     <a href="low_stock.php">Low Stock</a>
 </nav>

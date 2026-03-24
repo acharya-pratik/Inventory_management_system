@@ -65,7 +65,7 @@ $products = $pdo->query("
     <a href="categories.php">Categories</a>
     <a href="suppliers.php">Suppliers</a>
     <a href="customers.php">Customers</a>
-    <a href="new_sale_v2.php">New Sale</a>
+    <a href="new_sale.php">New Sale</a>
     <a href="reports.php">Reports</a>
     <a href="low_stock.php">Low Stock</a>
 </nav>

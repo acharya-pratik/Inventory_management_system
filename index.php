@@ -100,7 +100,7 @@ $recent_sales = $pdo->query("
     <a href="categories.php">Categories</a>
     <a href="suppliers.php">Suppliers</a>
     <a href="customers.php">Customers</a>
-    <a href="new_sale_v2.php">New Sale</a>
+    <a href="new_sale.php">New Sale</a>
     <a href="reports.php">Reports</a>
     <a href="low_stock.php">Low Stock</a>
 </nav>
@@ -138,6 +138,7 @@ $recent_sales = $pdo->query("
                     <th>Customer</th>
                     <th>Date</th>
                     <th>Total Amount</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -147,6 +148,7 @@ $recent_sales = $pdo->query("
                     <td><?= htmlspecialchars($sale['customer_name']) ?></td>
                     <td><?= date('d M Y, h:i A', strtotime($sale['sale_date'])) ?></td>
                     <td>Rs. <?= number_format($sale['total_amount'], 2) ?></td>
+                    <td><a href="view_sale.php?id=<?= $sale['sale_id'] ?>" style="color: #2563eb; text-decoration: none; font-weight: 600;">View</a></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
